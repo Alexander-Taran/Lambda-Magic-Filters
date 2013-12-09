@@ -62,9 +62,28 @@ namespace Filtering.Test
             var justMe = justMeFilteringResults.FirstOrDefault();
 
             Assert.IsNotNull(justMe, "Can't be null there should be Just Me");
-            Assert.IsTrue(justMe.Name.Equals("Just Me"),"Name should be Just Me");
+            Assert.IsTrue(justMe.Name.Equals("Just Me"), "Name should be Just Me");
 
         }
+
+        [TestMethod]
+        public void CanFilterUsersByRentedBookName()
+        {
+            FilterDefinitionForCollectionPropertyValue<User, Book, string> bookTitleFilter = new FilterDefinitionForCollectionPropertyValue<User, Book, string>
+            {
+                CollectionSelector = u => u.RentedBooks,
+                CollectionPropertySelector = b => b.Title
+            };
+
+
+
+            var allThoseWithScrumBookFilter = bookTitleFilter.GetFilterPredicateFor(FilterOperations.Contains, "Scrum & XP from the trenches");
+            var allThoseWithScrumBook = users.AsQueryable().Where(allThoseWithScrumBookFilter).ToList();
+
+            Assert.AreEqual(2, allThoseWithScrumBook.Count, "Should be two users with scrum book");
+        }
+
+
     }
 
     class User
